@@ -32,34 +32,44 @@ const wrongFormat = [];
 
 // Scroll
 
+// Get Random Number up to a Max Numer
+ function getRandomInt(max) {
+   return Math.floor(Math.random() * Math.floor(max));
+ }
+
 // Create Correct/Incorrect Random Equations
 function createEquations() {
   // Randomly choose how many correct equations there should be
-  // const correctEquations = 
+  const correctEquations = getRandomInt(questionAmount);
+  console.log('correctEquations: ', correctEquations);
   // Set amount of wrong equations
-  // const wrongEquations = 
+  const wrongEquations = questionAmount - correctEquations;
+  console.log('wrongEquations: ', wrongEquations);
   // Loop through, multiply random numbers up to 9, push to array
-  // for (let i = 0; i < correctEquations; i++) {
-  //   firstNumber = 
-  //   secondNumber = 
-  //   const equationValue = firstNumber * secondNumber;
-  //   const equation = `${firstNumber} x ${secondNumber} = ${equationValue}`;
-  //   equationObject = { value: equation, evaluated: 'true' };
-  //   equationsArray.push(equationObject);
-  // }
+  for (let i = 0; i < correctEquations; i++) {
+    firstNumber = getRandomInt(9);
+    secondNumber = getRandomInt(9);
+    const equationValue = firstNumber * secondNumber;
+    const equation = `${firstNumber} x ${secondNumber} = ${equationValue}`;
+    equationObject = { value: equation, evaluated: 'true' };
+    equationsArray.push(equationObject);
+  }
   // Loop through, mess with the equation results, push to array
-  // for (let i = 0; i < wrongEquations; i++) {
-  //   firstNumber = 
-  //   secondNumber = 
-  //   const equationValue = firstNumber * secondNumber;
-  //   wrongFormat[0] = `${firstNumber} x ${secondNumber + 1} = ${equationValue}`;
-  //   wrongFormat[1] = `${firstNumber} x ${secondNumber} = ${equationValue - 1}`;
-  //   wrongFormat[2] = `${firstNumber + 1} x ${secondNumber} = ${equationValue}`;
-  //   const formatChoice = 
-  //   const equation = wrongFormat[formatChoice];
-  //   equationObject = { value: equation, evaluated: 'false' };
-  //   equationsArray.push(equationObject);
-  // }
+  for (let i = 0; i < wrongEquations; i++) {
+    firstNumber = getRandomInt(9);
+    secondNumber = getRandomInt(9);
+    const equationValue = firstNumber * secondNumber;
+    wrongFormat[0] = `${firstNumber} x ${secondNumber + 1} = ${equationValue}`;
+    wrongFormat[1] = `${firstNumber} x ${secondNumber} = ${equationValue - 1}`;
+    wrongFormat[2] = `${firstNumber + 1} x ${secondNumber} = ${equationValue}`;
+    const formatChoice = getRandomInt(3)
+    const equation = wrongFormat[formatChoice];
+    equationObject = { value: equation, evaluated: 'false' };
+    equationsArray.push(equationObject);
+  }
+  shuffle(equationsArray);
+  console.log('equationArrya: ', equationsArray);
+  equationsToDOM()
 }
 
 // Dynamically adding correct/incorrect equations
@@ -83,6 +93,28 @@ function createEquations() {
 //   itemContainer.appendChild(bottomSpacer);
 // }
 
+// Display 3,2,1, GO!
+function countdownStart() {
+  let time = 3;
+  let timer = setInterval(() => {
+    if (time <= 0) {
+      time = String('GO!')
+      clearInterval(timer);
+    }
+    countdown.textContent = `${time}`;
+    time -= 1;
+  }, 1000);
+}
+
+
+// Navigate from Splash Page to CountDown page 
+function showCountDown() {
+  countdownPage.hidden = false;
+  splashPage.hidden = true;
+  countdownStart();
+  createEquations()
+}
+
 // Get the value from selected radio button
 function getRadioValue() {
   let radioValue;
@@ -98,7 +130,12 @@ function getRadioValue() {
 function selectQuestionAmount(e) {
   e.preventDefault();
   questionAmount = getRadioValue();
-  console.log(questionAmount);
+  if (questionAmount) {
+    console.log('question amount: ', questionAmount);
+    showCountDown();
+  } else {
+    alert("Please select game level!");
+  }
 }
 
 

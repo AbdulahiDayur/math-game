@@ -21,6 +21,7 @@ const playAgainBtn = document.querySelector('.play-again');
 // Equations
 let questionAmount = 0;
 let equationsArray = [];
+let playerGuessArray = [];
 
 // Game Page
 let firstNumber = 0;
@@ -29,8 +30,62 @@ let equationObject = {};
 const wrongFormat = [];
 
 // Time
+let timer;
+let timePlayed = 0;
+let baseTime = 0;
+let penaltyTime = 0;
+let finalTime = 0;
+let finalTimeDisplay = '0.0s';
 
 // Scroll
+let valueY = 0;
+
+// Stop Timer, Process Results, go to Score Page
+function checkTime() {
+  // console.log(timePlayed);
+  if (playerGuessArray.length == questionAmount) {
+    console.log('player Guess Array: ' ,playerGuessArray);
+    clearInterval(timer);
+
+
+    for (let i = 0; i < playerGuessArray.length; i++) {
+        let obj = equationsArray[i];
+
+        if (obj.evaluated == playerGuessArray[i]) {
+          // console.log(`correct answer: ${obj.evaluated}\nuser answer: ${playerGuessArray[i]}`);
+        } else {
+          penaltyTime += 0.5
+        }
+    }
+    finalTime = timePlayed + penaltyTime;
+    console.log('time', timePlayed, 'penalty', penaltyTime, 'final', finalTime);
+  }
+  
+}
+
+// Add a tenth of a second to timePlayed
+function addTime() {
+  timePlayed += 0.1;
+  checkTime();
+}
+
+// Start timer when game page is clicked
+function startTimer() {
+  // Reset times
+  timePlayed = 0;
+  penaltyTime = 0;
+  finalTime = 0;
+  timer = setInterval(addTime, 100);
+  gamePage.removeEventListener('click', startTimer);
+}
+
+// Scroll, Store user selection in playerGuessArray
+function select(guessedTrue) {
+  // Scroll 80 pixels
+  valueY += 80;
+  itemContainer.scroll(0, valueY);
+  return guessedTrue ? playerGuessArray.push('true') : playerGuessArray.push('false');
+}
 
 // Display Game Page
 function showGamePage() {
@@ -74,6 +129,7 @@ function createEquations() {
     equationsArray.push(equationObject);
   }
   shuffle(equationsArray);
+  console.log('equationsArray: ',equationsArray);
 }
 
 // Add Equations to DOM
@@ -176,3 +232,4 @@ startForm.addEventListener('click', () => {
 
 // Event Listners
 startForm.addEventListener('submit', selectQuestionAmount);
+gamePage.addEventListener('click', startTimer);
